@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7FAF8">
+<title>El viaje del ajedrez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;0,800;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7FAF8; --ink:#1C2740; --soft:#4A5672; --line:#D3DCD9; --card:#FFFFFF;
+  --india:#D9962A; --persia:#1F7F78; --anda:#2E5C8A; --sev:#9B3326; --euro:#5B4A86; --hoy:#2F7A3E;
+  --qbg:#FFF6DF; --qink:#5A3B00; --btn:#1C2740; --btnink:#F7FAF8;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121A2A; --ink:#EAF0F5; --soft:#A9B5C8; --line:#2C3A55; --card:#1A2438;
+    --qbg:#3A2C10; --qink:#FFE3A6; --btn:#EAF0F5; --btnink:#121A2A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121A2A; --ink:#EAF0F5; --soft:#A9B5C8; --line:#2C3A55; --card:#1A2438;
+  --qbg:#3A2C10; --qink:#FFE3A6; --btn:#EAF0F5; --btnink:#121A2A; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Alegreya Sans","Segoe UI",Roboto,Arial,sans-serif;font-size:18px;line-height:1.45;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible{outline:3px solid var(--india);outline-offset:2px}
+.glyph{font-family:"Segoe UI Symbol","Noto Sans Symbols 2","Apple Symbols","DejaVu Sans",serif}
+.serif{font-family:Alegreya,Georgia,serif}
+
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;background:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line)}
+header.top .brand{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:20px;background:none;border:0;color:var(--ink);padding:4px 0}
+header.top .acts{display:flex;gap:8px}
+header.top .acts button{background:transparent;border:1.5px solid var(--line);color:var(--soft);border-radius:20px;font-size:15px;padding:6px 12px}
+
+main{max-width:640px;margin:0 auto}
+.view{display:none}
+.view.on{display:block}
+
+/* menú */
+.hero{padding:28px 20px 6px}
+.hero h1{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:46px;line-height:.98;margin:0}
+.hero .sub{font-family:Alegreya,Georgia,serif;font-style:italic;font-size:24px;color:var(--soft);margin:8px 0 14px}
+.hero p{margin:0 0 6px;color:var(--soft);font-size:18px}
+.route{list-style:none;margin:18px 0 0;padding:0 20px 30px;position:relative}
+.route::before{content:"";position:absolute;left:47px;top:30px;bottom:60px;border-left:4px dotted var(--line)}
+.route li{position:relative}
+.route button{display:flex;align-items:center;gap:16px;width:100%;background:none;border:0;color:var(--ink);text-align:left;padding:10px 0}
+.route .dot{flex:none;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;border:4px solid var(--bg);box-shadow:0 0 0 2px var(--line)}
+.route .pl{font-family:Alegreya,Georgia,serif;font-weight:700;font-size:23px;display:block;line-height:1.1}
+.route .dt{font-size:15px;color:var(--soft);display:block}
+.route .tt{font-size:16px;display:block;color:var(--soft)}
+.startwrap{padding:0 20px 34px}
+.start{width:100%;background:var(--btn);color:var(--btnink);border:0;border-radius:30px;font-size:20px;font-weight:700;padding:15px}
+
+/* parada */
+.visual{position:relative;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 18px;min-height:230px;overflow:hidden}
+.visual::before{content:"";position:absolute;inset:0;background-image:linear-gradient(45deg,rgba(255,255,255,.07) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.07) 75%),linear-gradient(45deg,rgba(255,255,255,.07) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.07) 75%);background-size:64px 64px;background-position:0 0,32px 32px;pointer-events:none}
+.visual>*{position:relative}
+.visual .big{font-size:130px;line-height:1}
+.visual .cap{font-family:Alegreya,Georgia,serif;font-style:italic;font-size:20px;text-align:center;margin:10px 0 0;line-height:1.25}
+.body{padding:20px 20px 120px}
+.where{font-size:16px;color:var(--soft);margin:0 0 4px}
+.where b{color:var(--ink)}
+.body h2{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:34px;line-height:1.05;margin:0 0 14px}
+.body p{margin:0 0 12px;font-size:18px;line-height:1.5}
+.q{background:var(--qbg);color:var(--qink);border-radius:16px;padding:16px 18px;margin-top:18px}
+.q .qt{font-family:Alegreya,Georgia,serif;font-weight:700;font-size:21px;line-height:1.25}
+.q .ans{display:none;font-size:17px;font-weight:500;margin-top:8px;line-height:1.4}
+.q.open .ans{display:block}
+.q button{margin-top:12px;background:var(--qink);color:var(--qbg);border:0;border-radius:24px;font-size:16px;font-weight:700;padding:9px 18px}
+
+/* Sissa */
+.sissa{width:100%;text-align:center}
+.minib{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:min(220px,62vw);aspect-ratio:1;margin:0 auto 12px}
+.minib div{border-radius:2px;background:rgba(255,255,255,.18)}
+.minib div.d{background:rgba(255,255,255,.3)}
+.minib div.f{background:#fff}
+.sissa .cnt{font-size:15px}
+.sissa .num{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:22px;line-height:1.15;overflow-wrap:anywhere}
+.sissa .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.sissa button{background:#fff;color:#7a4d00;border:0;border-radius:22px;font-size:15px;font-weight:700;padding:9px 14px}
+
+/* palabras */
+.words{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.word{background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.5);color:#fff;border-radius:12px;padding:10px 12px;text-align:left;min-height:72px}
+.word .es{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:22px;display:block}
+.word .or{display:none;font-size:14px;line-height:1.3;margin-top:2px}
+.word.open .or{display:block}
+.word .tap{font-size:13px;opacity:.8}
+.word.open .tap{display:none}
+
+.abs{display:flex;gap:16px;align-items:flex-end}
+.abs svg{height:110px}
+
+.facts{display:flex;flex-direction:column;gap:8px;width:100%}
+.fact{display:flex;gap:12px;align-items:baseline;background:rgba(255,255,255,.13);border-radius:10px;padding:10px 12px}
+.fact .y{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:22px;min-width:52px}
+.fact .t{font-size:15px;line-height:1.3}
+
+/* final */
+.finale{padding:30px 20px 120px}
+.trail{display:flex;gap:5px;margin-bottom:22px}
+.trail i{flex:1;height:8px;border-radius:4px}
+.finale h2{font-family:Alegreya,Georgia,serif;font-weight:800;font-size:38px;line-height:1.05;margin:0 0 18px}
+.finale p{color:var(--soft);font-size:18px;margin:0 0 14px}
+.reto{border-left:6px solid var(--hoy);padding:4px 0 4px 16px;margin-top:20px}
+.reto b{font-family:Alegreya,Georgia,serif;font-size:23px;display:block;margin-bottom:4px}
+
+/* barra inferior */
+nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:var(--bg);border-top:1px solid var(--line);display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}
+nav.bar.on{display:flex}
+nav.bar button{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:26px;font-size:16px;font-weight:700;padding:10px 16px;display:flex;align-items:center;gap:6px;min-width:44px;min-height:44px}
+nav.bar button.main{background:var(--btn);color:var(--btnink);border-color:var(--btn)}
+nav.bar button:disabled{opacity:.3}
+nav.bar .pos{font-size:15px;color:var(--soft);text-align:center;line-height:1.2}
+nav.bar svg{width:14px;height:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <button class="brand" type="button" id="home">El viaje del ajedrez</button>
+  <div class="acts"><button type="button" id="themeBtn">Modo oscuro</button></div>
+</header>
+<main>
+  <section class="view on" id="menu">
+    <div class="hero">
+      <h1>El viaje del ajedrez</h1>
+      <p class="sub">De la India a tu recreo</p>
+      <p>El ajedrez ha recorrido medio mundo durante 1.500 años. Cada parada le dejó algo: un nombre, una pieza, una regla.</p>
+      <p>Toca una parada o empieza por el principio.</p>
+    </div>
+    <ol class="route" id="route"></ol>
+    <div class="startwrap"><button class="start" type="button" id="start">Empezar el viaje</button></div>
+  </section>
+  <div id="slides"></div>
+  <section class="view" id="fin">
+    <div class="finale">
+      <div class="trail" id="trail"></div>
+      <h2>El ajedrez no es de ninguna religión. Es de todos los que lo han jugado.</h2>
+      <p>Lo inventaron en la India, le pusieron nombre en Persia, lo perfeccionaron en Bagdad, lo trajeron a España desde Al-Ándalus, en Sevilla se escribió un libro con él, en Valencia nació la dama poderosa y en Inglaterra le pusieron la cruz al rey. Hoy lo juegan millones de personas de todos los países.</p>
+      <div class="reto"><b>Reto para el recreo</b>Jugamos una partida con tapones de colores o fichas con letras en lugar de piezas. Sin caras, sin coronas y sin cruces. ¿Cambia algo del juego?</div>
+    </div>
+  </section>
+</main>
+<nav class="bar" id="bar" aria-label="Navegación">
+  <button type="button" id="prevBtn" aria-label="Anterior"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13 3 6 10l7 7" fill="none" stroke="currentColor" stroke-width="3"/></svg>Anterior</button>
+  <button type="button" id="menuBtn" class="pos" style="border:0;padding:4px;min-width:0"><span id="posTxt"></span></button>
+  <button type="button" id="nextBtn" class="main" aria-label="Siguiente">Siguiente<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7 3 7 7-7 7" fill="none" stroke="currentColor" stroke-width="3"/></svg></button>
+</nav>
+<script>
+const T="\uFE0E";
+const STOPS = [
+  {
+    place:"India", date:"Hacia el siglo VI", color:"india", glyph:"♙",
+    title:"Un ejército en un tablero",
+    text:[
+      "El antepasado del ajedrez se llamaba <b>chaturanga</b>, que en sánscrito quiere decir «cuatro partes»: las cuatro partes del ejército indio.",
+      "Había soldados de a pie, caballería, <b>elefantes</b> y carros de guerra. Cada uno se convirtió en una pieza: peones, caballos, alfiles y torres."
+    ],
+    cap:"Infantería, caballería, elefantes y carros",
+    q:"Si los soldados son los peones, ¿qué pieza de hoy era el elefante?",
+    a:"El alfil. Por eso en árabe se llamaba al-fil, «el elefante»."
+  },
+  {
+    place:"India", date:"Una leyenda", color:"india", visual:"sissa",
+    title:"Sissa y los granos de trigo",
+    text:[
+      "Cuenta la leyenda que el sabio Sissa enseñó el ajedrez a un rey aburrido. Como premio solo pidió trigo: un grano en la primera casilla, dos en la segunda, cuatro en la tercera… doblando hasta la casilla 64.",
+      "El rey se rio de él. Hasta que sus matemáticos hicieron la cuenta."
+    ],
+    q:"Pulsa «Doblar» unas cuantas veces. ¿Crees que el rey pudo pagar?",
+    a:"No. Salen 18.446.744.073.709.551.615 granos: más de mil años de cosechas de trigo de todo el planeta."
+  },
+  {
+    place:"Persia", date:"Siglos VI y VII", color:"persia", glyph:"♚",
+    title:"El rey se llama «shah»",
+    text:[
+      "De la India el juego pasó a Persia, el actual Irán, donde lo llamaron <b>chatrang</b> y más tarde <b>shatranj</b>.",
+      "En persa, rey se dice <b>shah</b>. Cuando un jugador amenazaba al rey contrario, avisaba diciendo «¡shah!». Y cuando el rey ya no tenía escapatoria: «shah mat»."
+    ],
+    cap:"Shah: el rey",
+    q:"¿Qué palabra que usamos hoy al jugar viene de «shah»?",
+    a:"Jaque. Y «shah mat» se convirtió en jaque mate."
+  },
+  {
+    place:"Bagdad", date:"Siglos VIII al X", color:"persia", visual:"abs",
+    title:"Los grandes maestros de los califas",
+    text:[
+      "Cuando los árabes conquistaron Persia, adoptaron el juego y lo convirtieron en una pasión. En Bagdad, la gran ciudad de los califas, había jugadores famosos como <b>as-Suli</b>, el mejor de su tiempo.",
+      "Escribieron libros, inventaron problemas para resolver y jugaban con piezas sin caras ni figuras: formas sencillas que se distinguían por su silueta."
+    ],
+    cap:"Piezas abstractas, como las del mundo islámico",
+    q:"¿Se puede jugar al ajedrez con piezas que no tengan forma de rey, caballo o torre?",
+    a:"Sí. Lo importante es cómo se mueve cada pieza, no cómo es por fuera."
+  },
+  {
+    place:"Al-Ándalus", date:"Siglos IX y X", color:"anda", visual:"words",
+    title:"Llega a la Península",
+    text:[
+      "Desde el mundo árabe, el ajedrez cruzó a Al-Ándalus y de ahí se extendió por los reinos cristianos de la Península y por toda Europa.",
+      "El juego viajó con sus nombres. Muchas de las que usamos al jugar vienen del árabe y del persa. Toca las tarjetas para descubrir de dónde."
+    ],
+    q:"¿Por qué crees que tantas palabras del ajedrez vienen del árabe?",
+    a:"Porque quienes lo trajeron hablaban árabe, y los nombres se quedaron con el juego."
+  },
+  {
+    place:"Sevilla", date:"1283", color:"sev", glyph:"♜",
+    title:"El libro de Alfonso X",
+    text:[
+      "El rey Alfonso X el Sabio mandó hacer el <b>Libro de los juegos</b>, que se terminó en Sevilla en 1283. Es el libro de ajedrez más antiguo escrito en castellano.",
+      "Para hacerlo trabajaron juntos sabios cristianos, musulmanes y judíos, a partir de libros árabes. En sus dibujos aparecen personas de las tres religiones jugando juntas, y también mujeres."
+    ],
+    cap:"Hoy se guarda en la biblioteca de El Escorial",
+    q:"Si un libro hecho en Sevilla muestra a cristianos, musulmanes y judíos jugando juntos, ¿de quién es el ajedrez?",
+    a:"De todos. Ya en el siglo XIII lo compartían personas de distintas religiones."
+  },
+  {
+    place:"Valencia", date:"Siglo XV", color:"euro", glyph:"♛",
+    title:"Nace la dama poderosa",
+    text:[
+      "Hasta entonces, la pieza que estaba junto al rey era un consejero, la <b>alferza</b>, y solo podía moverse una casilla en diagonal. Era de las más débiles.",
+      "A finales del siglo XV, en España, la dama pasó a moverse todo lo que quisiera y en cualquier dirección. Así nació el ajedrez de hoy. Uno de los primeros textos con la regla nueva se escribió en Valencia, y en 1497 Lucena publicó en Salamanca uno de los primeros libros impresos de ajedrez."
+    ],
+    cap:"De consejero lento a la pieza más fuerte",
+    q:"¿Qué pasaría en una partida si la dama solo pudiera moverse una casilla?",
+    a:"Las partidas serían mucho más lentas. Con la dama nueva el juego se volvió más rápido, y a esa forma de jugar la llamaron «ajedrez de la dama»."
+  },
+  {
+    place:"París", date:"Siglo XVIII", color:"euro", glyph:"♘",
+    title:"Ajedrez en los cafés",
+    text:[
+      "En el <b>Café de la Régence</b> de París se reunían los mejores jugadores. Allí brilló <b>Philidor</b>, que escribió en 1749 que «los peones son el alma del juego».",
+      "Por esa época apareció <b>El Turco</b>, un muñeco que parecía una máquina capaz de jugar al ajedrez. Ganaba a casi todos… porque dentro iba escondido un jugador de verdad."
+    ],
+    cap:"Philidor y El Turco",
+    q:"¿Era El Turco una máquina inteligente?",
+    a:"No. Era un truco: un buen jugador escondido dentro del mueble movía las piezas."
+  },
+  {
+    place:"Londres", date:"1849 y 1851", color:"euro", glyph:"♔",
+    title:"Aparece la cruz del rey",
+    text:[
+      "Cada país fabricaba piezas distintas y a veces costaba reconocerlas. En 1849 se diseñó en Inglaterra el modelo <b>Staunton</b>, que se hizo tan popular que hoy se usa en todo el mundo.",
+      "Ese diseño le pone una cruz al rey. Es una decisión de los fabricantes, no una regla del juego. En 1851 se jugó en Londres el primer gran torneo internacional."
+    ],
+    cap:"Modelo Staunton, 1849",
+    q:"Entonces, ¿desde cuándo lleva cruz el rey?",
+    a:"Desde hace menos de 200 años, en un juego que tiene unos 1.500. Las reglas no dicen nada de cruces: hay ajedreces con el rey coronado o sin adornos."
+  },
+  {
+    place:"El mundo", date:"Siglo XX", color:"hoy", visual:"facts",
+    title:"El ajedrez se organiza",
+    text:[
+      "En el siglo XX el ajedrez se convirtió en un deporte con reglas comunes, campeonatos y federaciones en todos los continentes.",
+      "También empezó la competición entre personas y máquinas, esta vez de verdad: ordenadores sin nadie escondido dentro."
+    ],
+    q:"¿Por qué hace falta una federación mundial para un juego?",
+    a:"Para que todo el mundo juegue con las mismas reglas y pueda competir con cualquier país."
+  },
+  {
+    place:"Hoy", date:"Siglo XXI", color:"hoy", glyph:"♙",
+    title:"Un deporte de todo el mundo",
+    text:[
+      "La FIDE reúne a federaciones de casi 200 países, y el Comité Olímpico Internacional reconoce el ajedrez como deporte. Millones de personas juegan cada día por internet, también niños y niñas en aplicaciones como ChessKid.",
+      "Y el viaje ha dado la vuelta: en 2024 el indio <b>Gukesh Dommaraju</b>, con 18 años, se convirtió en el campeón del mundo más joven de la historia. El juego volvió a casa."
+    ],
+    cap:"De la India a la India, pasando por tu recreo",
+    q:"¿En cuántos de los lugares del viaje se juega hoy al ajedrez?",
+    a:"En todos. Y en tu colegio también."
+  }
+];
+const COLORS={india:"var(--india)",persia:"var(--persia)",anda:"var(--anda)",sev:"var(--sev)",euro:"var(--euro)",hoy:"var(--hoy)"};
+const ICON={sissa:"♙",abs:"♜",words:"♝",facts:"♚"};
+const $=s=>document.querySelector(s);
+const N=STOPS.length;
+let cur=-1;
+
+function visualHTML(s){
+  if(s.visual==="sissa") return `<div class="sissa">
+    <div class="minib" id="mb">${Array.from({length:64},(_,k)=>`<div class="${(Math.floor(k/8)+k)%2?'d':''}"></div>`).join("")}</div>
+    <div class="cnt">Casilla <b id="sq">1</b> de 64 · granos en esta casilla</div>
+    <div class="num" id="gr">1</div>
+    <div class="cnt" style="margin-top:6px">Total acumulado</div>
+    <div class="num" id="tot">1</div>
+    <div class="btns"><button type="button" id="dbl">Doblar</button><button type="button" id="all">Ir a la 64</button><button type="button" id="rst">Empezar de nuevo</button></div></div>`;
+  if(s.visual==="words"){
+    const W=[["Ajedrez","Del árabe aš-šiṭranŷ, que viene del persa chatrang y del sánscrito chaturanga."],["Alfil","Del árabe al-fil: «el elefante»."],["Jaque","Del persa shah: «rey»."],["Enroque","De roque, la torre, que viene del persa y árabe rukh: «carro»."],["Alferza","La antigua dama. Del árabe al-firzán: «el consejero»."],["Jaque mate","Del persa shah mat: el rey vencido, sin salida."]];
+    return `<div class="words">${W.map(w=>`<button type="button" class="word"><span class="es">${w[0]}</span><span class="tap">Toca para ver su origen</span><span class="or">${w[1]}</span></button>`).join("")}</div>`;
+  }
+  if(s.visual==="abs") return `<div class="abs" aria-hidden="true">
+    <svg viewBox="0 0 60 120"><rect x="8" y="30" width="44" height="80" rx="6" fill="#fff"/><rect x="18" y="12" width="24" height="24" rx="12" fill="#fff"/></svg>
+    <svg viewBox="0 0 60 120"><path d="M10 110 V40 L30 20 L50 40 V110Z" fill="#fff"/></svg>
+    <svg viewBox="0 0 60 120"><rect x="8" y="40" width="44" height="70" rx="4" fill="#fff"/><path d="M8 40 h12 v-12 h20 v12 h12" fill="#fff"/></svg>
+    <svg viewBox="0 0 60 120"><path d="M14 110 V60 Q14 40 30 40 Q46 40 46 60 V110Z" fill="#fff"/></svg>
+    </div><p class="cap">Piezas abstractas, como las del mundo islámico</p>`;
+  if(s.visual==="facts"){
+    const F=[["1924","Se funda en París la FIDE, la Federación Internacional de Ajedrez."],["1927","Vera Menchik gana el primer campeonato del mundo femenino."],["1997","El ordenador Deep Blue gana un match al campeón del mundo, Garri Kaspárov."],["1999","El Comité Olímpico Internacional reconoce el ajedrez como deporte."]];
+    return `<div class="facts">${F.map(f=>`<div class="fact"><span class="y">${f[0]}</span><span class="t">${f[1]}</span></div>`).join("")}</div>`;
+  }
+  return `<div class="big glyph" aria-hidden="true">${s.glyph}${T}</div><p class="cap">${s.cap||""}</p>`;
+}
+
+function build(){
+  $("#route").innerHTML=STOPS.map((s,i)=>`<li><button type="button" data-i="${i}">
+    <span class="dot glyph" style="background:${COLORS[s.color]}">${s.glyph||ICON[s.visual]}${T}</span>
+    <span><span class="dt">Parada ${i+1} · ${s.date}</span><span class="pl">${s.place}</span><span class="tt">${s.title}</span></span></button></li>`).join("");
+  document.querySelectorAll("#route button").forEach(b=>b.onclick=()=>go(+b.dataset.i));
+  $("#slides").innerHTML=STOPS.map((s,i)=>`<section class="view" id="s${i}" aria-label="${s.title}">
+    <div class="visual" style="background:${COLORS[s.color]}">${visualHTML(s)}</div>
+    <div class="body">
+      <p class="where"><b>${s.place}</b>, ${s.date.charAt(0).toLowerCase()+s.date.slice(1)}</p>
+      <h2>${s.title}</h2>
+      ${s.text.map(t=>`<p>${t}</p>`).join("")}
+      <div class="q"><div class="qt">${s.q}</div><div class="ans">${s.a}</div><button type="button" class="qb">Ver respuesta</button></div>
+    </div></section>`).join("");
+  document.querySelectorAll(".qb").forEach(b=>b.onclick=()=>{const q=b.parentElement;q.classList.toggle("open");b.textContent=q.classList.contains("open")?"Ocultar respuesta":"Ver respuesta";});
+  document.querySelectorAll(".word").forEach(b=>b.onclick=()=>b.classList.toggle("open"));
+  $("#trail").innerHTML=STOPS.map(s=>`<i style="background:${COLORS[s.color]}"></i>`).join("");
+  let n=1;const fmt=v=>v.toLocaleString("es-ES");
+  const draw=()=>{$("#sq").textContent=n;$("#gr").textContent=fmt(2n**BigInt(n-1));$("#tot").textContent=fmt(2n**BigInt(n)-1n);document.querySelectorAll("#mb div").forEach((c,k)=>c.classList.toggle("f",k<n));};
+  $("#dbl").onclick=()=>{if(n<64){n++;draw();}};$("#all").onclick=()=>{n=64;draw();};$("#rst").onclick=()=>{n=1;draw();};draw();
+}
+
+function nameOf(i){return i<0?"":(i>=N?"final":"parada-"+(i+1));}
+function show(i){
+  cur=i;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
+  if(i<0){$("#menu").classList.add("on");$("#bar").classList.remove("on");}
+  else{
+    (i>=N?$("#fin"):$("#s"+i)).classList.add("on");
+    $("#bar").classList.add("on");
+    $("#posTxt").innerHTML=i>=N?"Final<br>Menú":`${i+1} de ${N}<br>Menú`;
+    $("#prevBtn").disabled=false;
+    $("#nextBtn").style.visibility=i>=N?"hidden":"visible";
+  }
+  window.scrollTo(0,0);
+}
+function go(i){
+  if(i<-1)i=-1; if(i>N)i=N;
+  const h=nameOf(i);
+  if(("#"+h)===location.hash||(h===""&&!location.hash)){show(i);return;}
+  location.hash=h;
+}
+function fromHash(){
+  const h=location.hash.slice(1);
+  if(h==="final") return show(N);
+  const m=h.match(/^parada-(\d+)$/);
+  if(m){const k=+m[1]-1; if(k>=0&&k<N) return show(k);}
+  show(-1);
+}
+window.addEventListener("hashchange",fromHash);
+
+$("#start").onclick=()=>go(0);
+$("#home").onclick=()=>go(-1);
+$("#menuBtn").onclick=()=>go(-1);
+$("#prevBtn").onclick=()=>go(cur-1);
+$("#nextBtn").onclick=()=>go(cur+1);
+
+// deslizar con el dedo
+let x0=null,y0=null;
+document.addEventListener("touchstart",e=>{if(cur<0||e.target.closest(".sissa,.words"))return;x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+document.addEventListener("touchend",e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)go(cur+(dx<0?1:-1));},{passive:true});
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(cur+1);else if(e.key==="ArrowLeft")go(cur-1);});
+
+function isDark(){const t=document.documentElement.dataset.theme;if(t)return t==="dark";return matchMedia("(prefers-color-scheme: dark)").matches;}
+function paintTheme(){$("#themeBtn").textContent=isDark()?"Modo claro":"Modo oscuro";document.querySelector('meta[name="theme-color"]').content=isDark()?"#121A2A":"#F7FAF8";}
+try{const t=localStorage.getItem("viaje-tema");if(t)document.documentElement.dataset.theme=t;}catch(e){}
+$("#themeBtn").onclick=()=>{const t=isDark()?"light":"dark";document.documentElement.dataset.theme=t;try{localStorage.setItem("viaje-tema",t);}catch(e){}paintTheme();};
+paintTheme();
+build(); fromHash();
+</script>
+</body>
+</html>
